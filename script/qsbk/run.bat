@@ -1,0 +1,1 @@
+python C:\Users\Maste\Desktop\AllCode\python\script\qsbk\qsbk.py
