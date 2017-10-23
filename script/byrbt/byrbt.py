@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-# -*- coding: utf-8 -*-
-#请把utorrent的下载种子前的询问关掉，不然程序不能运行
 import urllib
 import urllib2
 import re
@@ -8,7 +7,7 @@ import time
 from bs4 import BeautifulSoup
 def get_respose(url):
     User_Agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
-    cookie=''#手动登陆后添加cookie值到这里
+    cookie=''#手动登陆后，复制cookie值到这里
     headers={'User-Agent':User_Agent,'Cookie':cookie}
     requst=urllib2.Request(url,headers=headers)
     try:
@@ -40,6 +39,24 @@ def write_to_downloaded(download):
         f.write(str(download)+'\n')
       #  print u'写入ID成功'
         f.close()
+def get_size_if_free(id):
+    link='http://bt.byr.cn/details.php?id='+str(id)+'&hit=1'
+    torrent_html = BeautifulSoup(get_respose(link).read(), 'lxml')
+    iffree=False
+    twofree=torrent_html.find_all(name='font',attrs={'class':'free'})
+    free=torrent_html.find_all(name='font',attrs={'class':'twoupfree'})
+    if (free or twofree):
+        iffree=True
+    torrent_size = torrent_html.find_all(name='td', attrs={'valign': 'top', 'align': 'left'}, limit=2)
+    size = torrent_size[1].next_element.next_element.next_element.next_element.strip()
+    if re.search('GB', size):
+        num = re.sub('GB', '', size)
+        size = float(num) * 1000
+    else:
+        re.search('MB', size)
+        num = re.sub('MB', '', size)
+        size = float(num)
+    return size,iffree
 def get_download_list():
     table=get_table()
     b = table.find_all('b')
@@ -54,7 +71,8 @@ def get_download_list():
         for i in __id:
             id=str(i)
         have_download_list=get_have_download_list()
-        if not(id in have_download_list) and (int(seeder)<=2 and int(download)>=4):
+        size,free=get_size_if_free(id)
+        if not(id in have_download_list) and (int(seeder)<=2 and int(download)>=4) and (size<10000) and (free):
             list.append({'name':name,'id':id})
             print u'有种子可以下载了'
             write_to_downloaded(id)
@@ -73,7 +91,7 @@ def download_list():
     return torrentss
 def download():
     torrentss=download_list()
-    download_tool='C:\Users\usernam\AppData\Roaming\uTorrent\uTorrent.exe'#修改为电脑utorrent程序所在位置
+    download_tool='C:\Users\User\AppData\Roaming\uTorrent\uTorrent.exe'#修改这里为你的utorrent程序的位置
     for torrent in torrentss:
         cmd=download_tool+' '+os.path.abspath(torrent['id']+'.torrent')
         print u'打开utorrent中.......'
@@ -84,5 +102,6 @@ def run():
         print u'系统启动中..........'
         download()
         print u'系统休眠中...........'
-        time.sleep(300)
+        time.sleep(180)
+
 run()
