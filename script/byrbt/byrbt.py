@@ -91,7 +91,7 @@ def download_list():
     return torrentss
 def download():
     torrentss=download_list()
-    download_tool='C:\Users\User\AppData\Roaming\uTorrent\uTorrent.exe'#修改这里为你的utorrent程序的位置
+    download_tool='C:\Users\Username\AppData\Roaming\uTorrent\uTorrent.exe'#修改这里为你的utorrent程序的位置
     for torrent in torrentss:
         cmd=download_tool+' '+os.path.abspath(torrent['id']+'.torrent')
         print u'打开utorrent中.......'
