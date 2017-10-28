@@ -47,16 +47,16 @@ def get_size_if_free(id):
     free=torrent_html.find_all(name='font',attrs={'class':'twoupfree'})
     if (free or twofree):
         iffree=True
-    torrent_size = torrent_html.find_all(name='td', attrs={'valign': 'top', 'align': 'left'}, limit=2)
-    size = torrent_size[1].next_element.next_element.next_element.next_element.strip()
-    if re.search('GB', size):
-        num = re.sub('GB', '', size)
-        size = float(num) * 1000
-    else:
-        re.search('MB', size)
-        num = re.sub('MB', '', size)
-        size = float(num)
-    return size,iffree
+    #torrent_size = torrent_html.find_all(name='td', attrs={'valign': 'top', 'align': 'left'}, limit=2)
+    #size = torrent_size[1].next_element.next_element.next_element.next_element.strip()
+    #if re.search('GB', size):
+    #    num = re.sub('GB', '', size)
+    #    size = float(num) * 1000
+    #else:
+    #    re.search('MB', size)
+    #    num = re.sub('MB', '', size)
+    #    size = float(num)
+    return iffree
 def get_download_list():
     table=get_table()
     b = table.find_all('b')
@@ -71,8 +71,9 @@ def get_download_list():
         for i in __id:
             id=str(i)
         have_download_list=get_have_download_list()
-        size,free=get_size_if_free(id)
-        if not(id in have_download_list) and (int(seeder)<=2 and int(download)>=4) and (size<10000) and (free):
+        free=get_size_if_free(id)
+        #and (size<10000)
+        if not(id in have_download_list) and (int(seeder)<=2 and int(download)>=4) and (free):
             list.append({'name':name,'id':id})
             print u'有种子可以下载了'
             write_to_downloaded(id)
@@ -91,7 +92,7 @@ def download_list():
     return torrentss
 def download():
     torrentss=download_list()
-    download_tool='C:\Users\Username\AppData\Roaming\uTorrent\uTorrent.exe'#修改这里为你的utorrent程序的位置
+    download_tool='uTorrent.exe'#修改这里为你的utorrent程序的位置
     for torrent in torrentss:
         cmd=download_tool+' '+os.path.abspath(torrent['id']+'.torrent')
         print u'打开utorrent中.......'

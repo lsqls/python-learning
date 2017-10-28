@@ -6,8 +6,8 @@ import time
 def run():
     min=0
     max=4323
-    start=0
-    end=300
+    start=120
+    end=max
     pageid=start
     while(pageid<=end):
         idlist=getid.getlist(pageid)

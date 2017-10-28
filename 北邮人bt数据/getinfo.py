@@ -43,7 +43,9 @@ def get_user_info(id):
         else:
             sex=u'女'
         register_time=user_page.find('td',text=u'加入日期').next_sibling.span['title']
-        recent_active_time=user_page.find('td',text=u'最近动向').next_sibling.span['title']
+        recent_active_time=user_page.find('td',text=u'最近动向')
+        if recent_active_time.next_sibling.span:
+                recent_active_time=recent_active_time.next_sibling.span['title']
         upload_size=tran_to_GB(user_page.find('strong',text=u'上传量').next_element.next_element)
         download_size=tran_to_GB(user_page.find('strong',text=u'下载量').next_element.next_element)
         school=user_page.find('td',text=u'学校').next_sibling.string
